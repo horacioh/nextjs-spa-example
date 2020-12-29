@@ -1,18 +1,31 @@
-import React from "react"
-import { AppProps } from "next/app"
-import dynamic from "next/dynamic"
-import App from "../components/root"
-
-const NoSSR: React.FC = ({ children }) => {
-  return <React.Fragment>{children}</React.Fragment>
-}
-
-const Dynamic = dynamic(() => Promise.resolve(NoSSR), { ssr: false })
-
-export default function Root({ pageProps }: AppProps & { Component: any }) {
+function DefaultLayout({ children }) {
   return (
-    <Dynamic>
-      <App {...pageProps} />
-    </Dynamic>
+    <div>
+      <h1>Default Layout</h1>
+      <div>{children}</div>
+    </div>
   )
 }
+
+function MyApp({ Component, pageProps }) {
+  const Layout = Component.Layout || DefaultLayout
+  return (
+    <Layout>
+      <Component {...pageProps} />
+    </Layout>
+  )
+}
+
+// Only uncomment this method if you have blocking data requirements for
+// every single page in your application. This disables the ability to
+// perform automatic static optimization, causing every page in your app to
+// be server-side rendered.
+//
+// MyApp.getInitialProps = async (appContext) => {
+//   // calls page's `getInitialProps` and fills `appProps.pageProps`
+//   const appProps = await App.getInitialProps(appContext);
+//
+//   return { ...appProps }
+// }
+
+export default MyApp
